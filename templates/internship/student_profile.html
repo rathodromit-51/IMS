@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+    <h1 class="mb-4"><i class="bi bi-person-circle"></i> My Profile</h1>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Academic Information</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Roll Number</label>
+                                <input type="text" class="form-control" name="roll_number" 
+                                       value="{% if student %}{{ student.roll_number }}{% endif %}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Degree</label>
+                                <select class="form-select" name="degree" required>
+                                    <option value="">Select Degree</option>
+                                    <option value="btech" {% if student and student.degree == 'btech' %}selected{% endif %}>
+                                        B.Tech
+                                    </option>
+                                    <option value="bsc" {% if student and student.degree == 'bsc' %}selected{% endif %}>
+                                        B.Sc
+                                    </option>
+                                    <option value="bca" {% if student and student.degree == 'bca' %}selected{% endif %}>
+                                        B.C.A.
+                                    </option>
+                                    <option value="mtech" {% if student and student.degree == 'mtech' %}selected{% endif %}>
+                                        M.Tech
+                                    </option>
+                                    <option value="mca" {% if student and student.degree == 'mca' %}selected{% endif %}>
+                                        M.C.A.
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Branch</label>
+                                <input type="text" class="form-control" name="branch" 
+                                       value="{% if student %}{{ student.branch }}{% endif %}" 
+                                       placeholder="e.g., Computer Science" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Semester</label>
+                                <input type="number" class="form-control" name="semester" 
+                                       value="{% if student %}{{ student.semester }}{% endif %}" 
+                                       min="1" max="8" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">GPA</label>
+                                <input type="number" class="form-control" name="gpa" step="0.01"
+                                       value="{% if student %}{{ student.gpa }}{% endif %}" 
+                                       min="0" max="10" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" name="phone" 
+                                       value="{% if student %}{{ student.phone }}{% endif %}" required>
+                            </div>
+                        </div>
+                        
+                        <h5 class="mt-4 mb-3">Contact & Links</h5>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">LinkedIn URL</label>
+                            <input type="url" class="form-control" name="linkedin_url" 
+                                   value="{% if student %}{{ student.linkedin_url }}{% endif %}" 
+                                   placeholder="https://linkedin.com/in/yourprofile">
+                        </div>
+                        
+                        <h5 class="mt-4 mb-3">Skills & Bio</h5>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Skills</label>
+                            <textarea class="form-control" name="skills" rows="3" 
+                                      placeholder="Python, Django, JavaScript, React, etc.">{% if student %}{{ student.skills }}{% endif %}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Bio</label>
+                            <textarea class="form-control" name="bio" rows="3" 
+                                      placeholder="Tell about yourself...">{% if student %}{{ student.bio }}{% endif %}</textarea>
+                        </div>
+                        
+                        <h5 class="mt-4 mb-3">Documents</h5>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Profile Picture</label>
+                            <input type="file" class="form-control" name="profile_picture" accept="image/*">
+                            {% if student and student.profile_picture %}
+                                <small class="text-muted d-block mt-2">
+                                    Current: <a href="{{ student.profile_picture.url }}" target="_blank">
+                                        View
+                                    </a>
+                                </small>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Resume (PDF/Word)</label>
+                            <input type="file" class="form-control" name="resume" 
+                                   accept=".pdf,.doc,.docx">
+                            {% if student and student.resume %}
+                                <small class="text-muted d-block mt-2">
+                                    Current: <a href="{{ student.resume.url }}" target="_blank">
+                                        Download
+                                    </a>
+                                </small>
+                            {% endif %}
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="bi bi-check-circle"></i> Save Profile
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            {% if student %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Profile Summary</h5>
+                </div>
+                <div class="card-body text-center">
+                    {% if student.profile_picture %}
+                        <img src="{{ student.profile_picture.url }}" alt="Profile" 
+                             class="rounded-circle mb-3" style="width: 120px; height: 120px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" 
+                             style="width: 120px; height: 120px;">
+                            <i class="bi bi-person-fill" style="font-size: 3rem; color: #ccc;"></i>
+                        </div>
+                    {% endif %}
+                    <h5>{{ user.first_name }} {{ user.last_name }}</h5>
+                    <p class="text-muted">{{ student.roll_number }}</p>
+                    <p>{{ student.degree }} - {{ student.branch }}</p>
+                    <p><strong>GPA:</strong> {{ student.gpa }}</p>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Applications</h5>
+                </div>
+                <div class="card-body">
+                    {% if applications %}
+                        {% for app in applications %}
+                        <div class="mb-3">
+                            <h6>{{ app.position.title }}</h6>
+                            <p class="text-muted small">{{ app.position.company.name }}</p>
+                            <span class="badge bg-info">{{ app.get_status_display }}</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center">No applications yet</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

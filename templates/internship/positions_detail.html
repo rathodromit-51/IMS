@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ position.title }} - Position Details{% endblock %}
+
+{% block content %}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h2 class="mb-0">{{ position.title }}</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">
+                        <a href="{% url 'company_detail' position.company.pk %}">
+                            <i class="bi bi-building"></i> {{ position.company.name }}
+                        </a>
+                    </p>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p><strong><i class="bi bi-geo-alt"></i> Location:</strong> {{ position.location }}</p>
+                            <p><strong><i class="bi bi-calendar"></i> Duration:</strong> {{ position.duration_weeks }} weeks</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="bi bi-calendar-range"></i> Starts:</strong> {{ position.start_date }}</p>
+                            <p><strong><i class="bi bi-calendar-range"></i> Ends:</strong> {{ position.end_date }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if position.stipend %}
+                        <p class="mb-4">
+                            <strong><i class="bi bi-cash-coin"></i> Stipend:</strong> 
+                            <span class="text-success fs-5">₹{{ position.stipend }}/month</span>
+                        </p>
+                    {% endif %}
+                    
+                    <span class="badge badge-{{ position.status }} mb-4">
+                        {{ position.get_status_display }}
+                    </span>
+                    
+                    <h4>Description</h4>
+                    <p>{{ position.description }}</p>
+                    
+                    <h4 class="mt-4">Requirements</h4>
+                    <p>{{ position.requirements }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Apply Now</h5>
+                </div>
+                <div class="card-body">
+                    {% if user.is_authenticated %}
+                        {% if already_applied %}
+                            <div class="alert alert-info">
+                                <i class="bi bi-check-circle"></i> You have already applied for this position.
+                            </div>
+                        {% elif can_apply %}
+                            <a href="{% url 'apply_position' position.pk %}" class="btn btn-success btn-lg w-100">
+                                <i class="bi bi-send"></i> Apply Now
+                            </a>
+                        {% else %}
+                            <div class="alert alert-warning">
+                                <i class="bi bi-exclamation-circle"></i> This position is not open for applications.
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-center mb-3">Please login to apply</p>
+                        <a href="{% url 'login' %}" class="btn btn-primary w-100 mb-2">
+                            Login
+                        </a>
+                        <a href="{% url 'register' %}" class="btn btn-outline-primary w-100">
+                            Register
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">Company</h5>
+                </div>
+                <div class="card-body text-center">
+                    {% if position.company.logo %}
+                        <img src="{{ position.company.logo.url }}" alt="{{ position.company.name }}" 
+                             class="img-fluid mb-3" style="max-height: 100px;">
+                    {% else %}
+                        <i class="bi bi-building" style="font-size: 4rem; color: #ccc;"></i>
+                    {% endif %}
+                    <h5>{{ position.company.name }}</h5>
+                    <p class="text-muted">{{ position.company.location }}</p>
+                    <a href="{% url 'company_detail' position.company.pk %}" class="btn btn-outline-primary btn-sm">
+                        View Company Profile
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
