@@ -35,7 +35,7 @@ def browse_positions(request):
     
     if search:
         positions = positions.filter(
-            Q(title__icontians= search) | Q(description__icontains= search )
+            Q(title__icontains= search) | Q(description__icontains= search )
         )
     
     if location:
@@ -108,13 +108,13 @@ def apply_position(request, pk):
 @login_required
 def student_profile(request):
     try:
-        student = Student.objects.filter(user= request.user).first()
+        student = Student.objects.get(user=request.user)
     except Student.DoesNotExist:
-        student= None
-        
-    if request.method == "POST":
+        student = None
+    
+    if request.method == 'POST':
         if not student:
-            student = Student.objects.get(user = request.user)
+            student = Student(user=request.user)
         
         student.roll_number = request.POST.get('roll_number')
         student.degree = request.POST.get('degree')
@@ -128,16 +128,18 @@ def student_profile(request):
             student.profile_pic = request.FILES['profile_picture']
         if 'resume' in request.FILES:
             student.resume = request.FILES['resume']
-            
+        
         student.save()
-        messages.success(request, 'Profile updated successfully..!')
+        messages.success(request, 'Profile updated successfully!')
         return redirect('student_profile')
     
-    applications = student.applications.all() if student else [] # type: ignore
-        
+    applications = []
+    if student:
+        applications = student.applications.all() # type: ignore
+    
     return render(request, 'internship/student_profile.html', {
         'student': student,
-        "applications" : applications
+        'applications': applications
     })
     
 # Company List

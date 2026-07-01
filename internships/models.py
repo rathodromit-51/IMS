@@ -35,7 +35,7 @@ class Student(models.Model):
     roll_number =  models.CharField( max_length=200, unique=True )
     degree = models.CharField( max_length=20, choices=DEGREE_CHOICE )
     branch = models.CharField( max_length=200 )
-    semester = models.IntegerField()
+    semester = models.IntegerField( max_length=8, null=False)
     gpa  = models.DecimalField(max_digits=3, decimal_places=2 )
     phone = models.CharField( max_length=15 )
     
